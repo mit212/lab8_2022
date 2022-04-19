@@ -151,8 +151,8 @@ def rosRGBDCallBack(rgb_data, depth_data):
         xp,yp,w,h = cv2.boundingRect(cnt)
         
         # Get depth value from depth image, need to make sure the value is in the normal range 0.1-10 meter
-        if not math.isnan(cv_depthimage2[int(yp)][int(xp)]) and cv_depthimage2[int(yp)][int(xp)] > 0.1 and cv_depthimage2[int(yp)][int(xp)] < 10.0:
-            zc = cv_depthimage2[int(yp)][int(xp)]
+        if not math.isnan(cv_depthimage2[int(xp)][int(yp)]) and cv_depthimage2[int(xp)][int(yp)] > 0.5 and cv_depthimage2[int(xp)][int(yp)] < 10.0:
+            zc = cv_depthimage2[int(xp)][int(yp)]
             print 'zc', zc
         else:
             continue
@@ -173,6 +173,8 @@ def getXYZ(xp, yp, zc, fx,fy,cx,cy):
     xd = inv(K)*xp
     xn = xd
     xc = np.array([xd[0]*zc, xd[1]*zc, zc])
+    #print('xd',xd)
+    #print('xn',xn)
     return (xc[0],xc[1],xc[2])
 
 
@@ -185,7 +187,7 @@ def showImage(cv_image, mask_erode_image, mask_image):
     cv2.line(cv_image, (325, 240), (315, 240), (255,0,0))
     
     # Show the images in cv window (may freeze in ROS Kinetic/16.04)
-    cv2.imshow('OpenCV_Original', cv_image)
+    #  cv2.imshow('OpenCV_Original', cv_image)
     #  cv2.imshow('OpenCV_Mask_Erode', mask_erode_image)
     #  cv2.imshow('OpenCV_Mask_Dilate', mask_image)
     cv2.imshow('OpenCV_View', res)
@@ -194,7 +196,7 @@ def showImage(cv_image, mask_erode_image, mask_image):
     # Publish the images to ROS and show it in rviz
     
     #TO DO: IF YOU WANT TO. You can uncomment these images but it may cause RVIZ to crash.
-    #img_pub1.publish(cv_bridge.cv2_to_imgmsg(cv_image, encoding="passthrough"))
+    img_pub1.publish(cv_bridge.cv2_to_imgmsg(cv_image, encoding="passthrough"))
     #img_pub2.publish(cv_bridge.cv2_to_imgmsg(mask_erode_image, encoding="passthrough"))
     #img_pub3.publish(cv_bridge.cv2_to_imgmsg(mask_image, encoding="passthrough"))
     img_pub4.publish(cv_bridge.cv2_to_imgmsg(res, encoding="passthrough"))
